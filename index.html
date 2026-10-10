@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>금융생활 설계 연습장</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{
+  /* 레이아웃: 흰 바탕 위에 종이 한 장(문제지 표)을 올린 느낌. 표 모양은 PDF 그대로, 겉만 다듬음 */
+  --paper:#FFFFFF; --ink:#000000; --ink-2:#5B6270; --soft:#D9D9D9; --hair:#E6E8EC; --wash:#F7F8FA;
+  --gold:#FFD700; --gold-deep:#E8BE00; --peach:#FCE4D6; --yel:#FFF2CC; --red:#E00000; --blue:#0000FF;
+  --ok:#CDEFD9; --ok-ink:#0B6B34; --bad:#F8CFD6; --bad-ink:#B3122B;
+  --g1:#F2F2F2; --g2:#FBF3DA; --g3:#DDE4F6; --g4:#E8D9EE; --g5:#CDF2E2;
+  --shadow:0 1px 2px rgba(17,24,39,.06),0 14px 32px -18px rgba(17,24,39,.35);
+  --f-serif:"Noto Serif KR","Batang","AppleMyungjo",serif;
+  --f-sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-sans);font-size:16px;line-height:1.65;-webkit-text-size-adjust:100%}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:18px 40px}
+h2,h3,p{margin:0}
+button,input,select{font-family:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #2447D6;outline-offset:2px}
+
+/* 머리말 */
+.top{display:grid;gap:.15rem;padding-bottom:.9rem}
+.kick{font-size:.8rem;font-weight:700;letter-spacing:.08em;color:var(--ink-2)}
+.top b{justify-self:start;font-family:var(--f-serif);font-weight:700;font-size:clamp(1.5rem,6vw,2rem);line-height:1.25;background:linear-gradient(transparent 60%,var(--gold) 60%);padding-inline:.15em;margin-inline:-.15em}
+
+/* 탭 */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--paper);padding-block:.4rem .7rem}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;background:#F1F2F5;border-radius:16px}
+.tab{border:0;background:transparent;color:var(--ink-2);font-weight:700;font-size:.93rem;min-height:48px;padding:.3rem;border-radius:12px;cursor:pointer;line-height:1.3}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--gold);color:#000;box-shadow:0 1px 2px rgba(0,0,0,.2),0 4px 10px -4px rgba(232,190,0,.9)}
+
+.panel{display:grid;gap:1.3rem;padding-top:.6rem}
+h2{font-family:var(--f-serif);font-size:1.3rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+.lead{display:grid;gap:.3rem}
+.lead p{color:var(--ink-2)}
+.sec{display:grid;gap:.6rem;min-width:0}
+.hint{color:var(--ink-2);font-size:.92rem}
+
+/* 버튼 */
+.bt{font-weight:700;font-size:.92rem;min-height:46px;padding:.35rem 1.15rem;border:1px solid #111;background:var(--paper);color:var(--ink);border-radius:999px;cursor:pointer;box-shadow:0 2px 0 #111;transition:transform .08s,box-shadow .08s}
+.bt:active{transform:translateY(2px);box-shadow:0 0 0 #111}
+.bt.gold{background:var(--gold)}
+.mini{font-size:.82rem;font-weight:500;border:1px solid var(--soft);background:var(--paper);color:var(--ink-2);min-height:34px;padding:0 .85rem;border-radius:999px;cursor:pointer}
+.mini:hover{color:var(--ink);border-color:var(--ink-2)}
+.actions{display:flex;flex-wrap:wrap;gap:.6rem}
+.controls{display:grid;gap:.8rem;padding:1rem;background:var(--wash);border:1px solid var(--hair);border-radius:18px}
+.crow{display:flex;flex-wrap:wrap;gap:.5rem 1.1rem;align-items:center}
+.crow label{display:flex;align-items:center;gap:.45rem;font-weight:500}
+.crow input[type=checkbox]{width:1.2rem;height:1.2rem;accent-color:#000}
+.ctl-sel{font-size:1rem;min-height:46px;padding:.3rem .8rem;border:1px solid #111;background:var(--paper);color:var(--ink);border-radius:12px}
+.note-line{min-height:1.4rem;font-size:.9rem;color:var(--ink-2)}
+.score{display:flex;flex-wrap:wrap;gap:.4rem}
+.score span{background:var(--wash);border:1px solid var(--hair);border-radius:999px;padding:.1rem .85rem;font-size:.88rem}
+.score b{font-weight:700}
+.ok-t{color:var(--ok-ink)} .bad-t{color:var(--bad-ink)}
+.bar{height:8px;background:#ECEDF0;border-radius:999px;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#1c9a58,#34c47a);border-radius:999px;transition:width .25s}
+.bank{display:flex;flex-wrap:wrap;gap:.45rem;padding:.8rem;border:1px dashed #9aa0ad;border-radius:14px}
+.chip{font-size:.92rem;border:1px solid #111;background:var(--yel);color:var(--ink);min-height:38px;padding:0 .9rem;border-radius:999px;cursor:pointer}
+.dock{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:5;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:.5rem;align-items:center;padding:.65rem .8rem;background:rgba(255,255,255,.96);border:1px solid #111;border-radius:18px;box-shadow:0 12px 28px -10px rgba(0,0,0,.4)}
+.dock-info{display:grid;gap:.3rem;min-width:0;font-size:.82rem;font-weight:500}
+
+/* ====== 문제지 (PDF 그대로) ====== */
+.ws{container-type:inline-size;width:100%;max-width:780px;margin-inline:auto;padding:10px;background:#fff;border:1px solid var(--hair);border-radius:14px;box-shadow:var(--shadow)}
+@media (min-width:640px){.ws{padding:20px}}
+table.w{width:100%;border-collapse:collapse;table-layout:fixed;font-family:var(--f-serif);font-size:14px;font-size:max(12px,2cqw);color:#000;background:#fff}
+.w td{border:1px solid #000;padding:.2em .5em;height:34px;height:max(34px,5.7cqw);line-height:1.4;overflow-wrap:anywhere;vertical-align:middle}
+.w .gold{background:var(--gold);text-align:center;font-weight:700;font-size:max(15px,3.3cqw);height:max(46px,7.8cqw)}
+.w .idl{height:max(38px,6.4cqw);font-weight:700}
+.w .ph{background:var(--peach);font-weight:700}
+.w .b{font-weight:700}
+.w .c{text-align:center}
+.w .r{color:var(--red)}
+.w .y{background:var(--yel)}
+.w .num{text-align:right}
+.w .ind{padding-left:2.2em}
+.w .tagb{background:#000;color:#fff;padding:0 .25em;margin-left:.6em}
+.w .dg{background:linear-gradient(to top right,transparent calc(50% - .6px),#000 calc(50% - .6px),#000 calc(50% + .6px),transparent calc(50% + .6px))}
+.w .inv{vertical-align:top;line-height:1.7;padding-top:.35em}
+.gap{height:max(14px,5.7cqw)}
+.gap2{height:max(8px,2cqw)}
+.w td.y.ok{background:var(--ok);color:var(--ok-ink)}
+.w td.y.bad{background:var(--bad);color:var(--bad-ink)}
+.w td.y.shown{background:var(--yel);color:#111}
+.w input.cell{width:100%;border:0;background:transparent;font-family:var(--f-serif);font-size:16px;text-align:right;color:inherit;padding:.15em 0;border-radius:0}
+.w td.y:focus-within{box-shadow:inset 0 0 0 2px #111}
+.w .fcell{text-align:center;white-space:nowrap}
+.w .fcell input.cell{width:4.2em;text-align:center;border-bottom:1px solid #000}
+.w .sym{font-size:10.5px;font-size:max(10.5px,1.55cqw);text-align:center;line-height:1.3;padding-inline:.25em}
+.w input.rv,.w select.rv{font:inherit;color:var(--red);background:transparent;border:0;border-bottom:1px dotted rgba(224,0,0,.45);border-radius:0;padding:0;text-align:center;appearance:none;-webkit-appearance:none;min-width:1.2em}
+.w select.rv{text-align-last:center}
+.w .mid{text-align:right;font-size:max(11px,1.7cqw)}
+.w input.calc{width:100%;border:0;background:transparent;font-family:var(--f-serif);font-size:16px;text-align:right;padding:.2em 0}
+.w .fl{line-height:1.6;font-size:max(11.5px,1.8cqw)}
+.pickb{font:inherit;color:inherit;background:transparent;border:1.5px solid transparent;border-radius:50%;padding:.05em .5em;cursor:pointer;text-decoration:underline dotted}
+.pickb.on,.oval{border:1.5px solid var(--red);border-radius:50%;text-decoration:none}
+.oval{padding:.05em .5em;display:inline-block}
+.w .res{text-align:right;color:var(--blue);font-weight:700}
+.w .rr{display:flex;align-items:center;justify-content:flex-end;gap:.05em;color:var(--blue);font-weight:700}
+.w .rr input.cell{text-align:right;color:var(--blue);font-weight:700;width:2.6em;padding:0}
+.notebox{border:1px solid #000;margin-top:max(6px,1.2cqw);padding:.5em .7em;font-family:var(--f-serif);font-size:13px;font-size:max(12px,1.85cqw);line-height:1.8}
+
+/* 1번 문장 표 */
+.w.list td.n{text-align:center;padding:0;font-size:max(12px,1.9cqw);vertical-align:middle}
+.w.list td.t{padding:.3em .7em;text-align:left;font-size:12.5px;font-size:max(12.5px,1.8cqw);line-height:1.75;height:auto;min-height:max(30px,4.6cqw)}
+.w.list tr.g1 td{background:var(--g1)} .w.list tr.g2 td{background:var(--g2)} .w.list tr.g3 td{background:var(--g3)}
+.w.list tr.g4 td{background:var(--g4)} .w.list tr.g5 td{background:var(--g5)} .w.list tr.g0 td{background:#fff}
+.w.list tr.ok td.n{background:#9FDCB8} .w.list tr.bad td.n{background:#F4AEB9} .w.list tr.shown td.n{background:#C9C9C9}
+.w.list tr.ok td.n::after{content:"✓";display:block;font-size:.8em;color:var(--ok-ink);line-height:1}
+.w.list tr.bad td.n::after{content:"✕";display:block;font-size:.8em;color:var(--bad-ink);line-height:1}
+.sent{overflow-wrap:anywhere}
+input.blank{font-family:var(--f-serif);font-size:16px;font-weight:700;color:#000;background:#FFE066;border:0;border-bottom:2px solid #000;border-radius:3px 3px 0 0;padding:.05em .3em;text-align:center;max-width:100%;min-height:1.7em}
+input.blank:focus{background:#FFD21F}
+tr.ok input.blank{background:var(--ok);color:var(--ok-ink)}
+tr.bad input.blank{background:var(--bad);color:var(--bad-ink)}
+tr.shown input.blank{background:var(--soft);color:#333}
+.acts{display:none;flex-wrap:wrap;gap:.3rem .5rem;align-items:center;margin-top:.2rem;font-family:var(--f-sans)}
+tr.q:focus-within .acts,tr.ok .acts,tr.bad .acts,tr.shown .acts{display:flex}
+.msg{font-size:.85rem;color:var(--ink-2)}
+tr.ok .msg{color:var(--ok-ink);font-weight:700} tr.bad .msg{color:var(--bad-ink);font-weight:700}
+.empty-t{font-family:var(--f-sans);color:var(--ink-2)}
+
+/* 설명 영역 */
+.legend{display:flex;flex-wrap:wrap;gap:.3rem 1.2rem;font-size:.92rem;color:var(--ink-2)}
+.sw{display:inline-block;width:1.3rem;height:.9rem;vertical-align:-.1rem;margin-right:.4rem;background:var(--yel);border:1px solid #000}
+.red{color:var(--red);font-weight:700}
+ul.plain{margin:0;padding-left:1.2rem;display:grid;gap:.45rem}
+.note{padding:1rem 1.1rem;background:var(--wash);border:1px solid var(--hair);border-radius:16px;display:grid;gap:.5rem}
+.note.warn{background:#FFF6F6;border-color:#F2B8B8}
+.checks{list-style:none;padding:0;margin:0;display:grid;gap:.1rem}
+.checks label{display:flex;gap:.7rem;align-items:flex-start;min-height:46px;align-content:center}
+.checks input{margin-top:.4rem;width:1.2rem;height:1.2rem;accent-color:#000;flex:none}
+details.fold{background:var(--wash);border:1px solid var(--hair);border-radius:16px}
+details.fold>summary{cursor:pointer;font-weight:700;padding:.8rem 1.1rem;min-height:48px;list-style-position:inside}
+details.fold>.inner{padding:0 1.1rem 1.1rem;display:grid;gap:.7rem}
+.whylist{margin:0;padding-left:1.4rem;display:grid;gap:.6rem;font-size:.92rem;line-height:1.7}
+.whylist li.attn{color:var(--bad-ink);font-weight:500}
+.whylist b{color:#000}
+.fm{font-variant-numeric:tabular-nums}
+
+@media (max-width:560px){
+  .wrap{padding-block:12px 28px}
+  .mini{min-height:40px}
+}
+@media (prefers-reduced-motion:reduce){.bt,.bar>i{transition:none}}
+
+/* ---- 더 예쁘게 ---- */
+.hero{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:.7rem;padding:1.1rem 1.2rem;background:linear-gradient(120deg,#FFFFFF 0%,#FFFBE3 100%);border:1px solid #F1E39A;border-radius:22px;box-shadow:var(--shadow)}
+.hero-t{display:grid;gap:.15rem;min-width:0}
+.hero .kick{font-size:.78rem;font-weight:700;letter-spacing:.1em;color:#8A6D00}
+.hero b{justify-self:start;font-family:var(--f-serif);font-weight:700;font-size:clamp(1.45rem,6vw,2rem);line-height:1.25;background:linear-gradient(transparent 62%,var(--gold) 62%);padding-inline:.15em;margin-inline:-.15em}
+.hero p{color:var(--ink-2);font-size:.92rem;max-width:30ch}
+.hero-art{flex:none}
+@media (max-width:420px){.hero-art{display:none}}
+.nbadge{display:inline-grid;place-items:center;width:1.9rem;height:1.9rem;margin-right:.55rem;vertical-align:.1em;border-radius:50%;background:var(--gold);border:2px solid #000;font-family:var(--f-sans);font-size:.95rem;font-weight:700;line-height:1}
+.bt.gold{background:linear-gradient(#FFE552,#FFD700)}
+.ws{border-top:5px solid var(--gold)}
+.sec h3,.note h3{justify-self:start;background:linear-gradient(transparent 62%,#FFE98A 62%);padding-inline:.15em;margin-inline:-.15em}
+summary::marker{color:#C9A400}
+.w.list tr.q:hover td.t{filter:brightness(.97)}
+.panel{animation:rise .3s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.panel{animation:none}}
+</style>
+
+<div class="wrap">
+  <header class="hero"><div class="hero-t"><span class="kick">통합사회 2 · 수행평가</span><b>금융생활 설계 연습장</b><p>1번 빈칸 50문장과 2번 계산 문제를 문제지 그대로 연습해요.</p></div><div class="hero-art"><svg viewBox="0 0 96 74" width="92" height="71" aria-hidden="true" focusable="false"><rect x="4" y="52" width="15" height="18" rx="2" fill="#FFD700" stroke="#000" stroke-width="2"/><rect x="25" y="40" width="15" height="30" rx="2" fill="#FFE98A" stroke="#000" stroke-width="2"/><rect x="46" y="27" width="15" height="43" rx="2" fill="#FFD700" stroke="#000" stroke-width="2"/><rect x="67" y="12" width="15" height="58" rx="2" fill="#FFE98A" stroke="#000" stroke-width="2"/><polyline points="10,44 32,32 53,19 75,5" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="75" cy="5" r="4.5" fill="#E00000" stroke="#000" stroke-width="1.5"/></svg></div></header>
+
+  <nav class="tabs" aria-label="연습 구역">
+    <div class="seg" role="tablist">
+      <button class="tab" role="tab" data-t="p1" aria-selected="true">1번<br>빈칸 연습</button>
+      <button class="tab" role="tab" data-t="p2g" aria-selected="false">2번<br>풀이법</button>
+      <button class="tab" role="tab" data-t="p2p" aria-selected="false">2번<br>계산 연습</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ================= 1번 ================= -->
+    <section id="p1" class="panel" role="tabpanel">
+      <h2><span class="nbadge">1</span>50문장 빈칸 채우기</h2>
+      <div class="controls">
+        <div class="crow">
+          <label>범위
+            <select id="range" class="ctl-sel">
+              <option value="1-50">전체 1~50</option>
+              <option value="1-11">예금·이자 1~11</option>
+              <option value="12-24">채권 12~24</option>
+              <option value="25-39">주식 25~39</option>
+              <option value="40-47">보험·연금 40~47</option>
+              <option value="48-50">펀드·투자방식 48~50</option>
+              <option value="1-10">1~10</option>
+              <option value="11-20">11~20</option>
+              <option value="21-30">21~30</option>
+              <option value="31-40">31~40</option>
+              <option value="41-50">41~50</option>
+              <option value="wrong">틀린 문장만</option>
+            </select>
+          </label>
+        </div>
+        <div class="crow">
+          <label><input type="checkbox" id="shuffle">순서 섞기</label>
+          <label><input type="checkbox" id="randBlank" checked>새로 시작할 때 빈칸 랜덤</label>
+          <label><input type="checkbox" id="bank">보기 단어 보이기</label>
+        </div>
+        <div class="actions">
+          <button class="bt gold" type="button" data-act="reroll">빈칸 바꾸기</button>
+          <button class="bt" type="button" data-act="start">새로 시작</button>
+        </div>
+        <p class="note-line" id="noteLine" aria-live="polite"></p>
+      </div>
+
+      <div class="score" id="scoreRow" aria-live="polite"></div>
+      <div class="bank" id="bankBox" hidden></div>
+
+      <div class="ws" id="sheet1">
+        <table class="w">
+          <colgroup><col style="width:16.6667%"><col style="width:16.6667%"><col style="width:16.6667%"><col style="width:16.6667%"><col style="width:16.6667%"><col style="width:16.6667%"></colgroup>
+          <tbody>
+            <tr><td colspan="6" class="gold">[ 통합사회 2 – 수행평가 &lt;금융생활 설계하기&gt; ]</td></tr>
+            <tr><td colspan="3" class="idl"><span>학번:</span><span style="margin-left:14cqw">이름:</span></td><td colspan="3" class="idl">총점: 20점</td></tr>
+          </tbody>
+        </table>
+        <div class="gap2"></div>
+        <table class="w list">
+          <colgroup><col style="width:5.7%"><col></colgroup>
+          <tbody id="qbody"></tbody>
+        </table>
+      </div>
+
+      <div class="actions">
+        <button class="bt" id="revealAll" type="button">정답 모두 보기</button>
+      </div>
+
+      <div class="dock">
+        <div class="dock-info"><span id="dockText"></span><div class="bar"><i id="scoreBar"></i></div></div>
+        <button class="bt gold" type="button" data-act="reroll">빈칸 바꾸기</button>
+        <button class="bt" type="button" data-act="grade">채점</button>
+      </div>
+    </section>
+
+    <!-- ================= 2번 풀이법 ================= -->
+    <section id="p2g" class="panel" role="tabpanel" hidden>
+      <div class="lead">
+        <h2><span class="nbadge">2</span>시험지에 뭘 쓰면 되나</h2>
+        <p>문제지와 같은 표에 숫자 대신 문자를 넣었습니다. 노란 칸마다 그 칸에 쓸 식이 적혀 있습니다. 빨간 글씨 숫자는 문제지에 적힌 값을 그대로 씁니다. 단위는 만원입니다.</p>
+      </div>
+
+      <div class="legend">
+        <span><i class="sw"></i>노란 칸: 계산해서 쓰는 곳 (식이 적혀 있음)</span>
+        <span class="red">빨간 글씨: 반마다 다른 숫자</span>
+      </div>
+
+      <div class="ws" id="symSheet"></div>
+
+      <div class="sec">
+        <h3>문자 읽는 법</h3>
+        <ul class="plain">
+          <li><b>M</b>은 월소득, <b>a, b, c</b>는 보험, 연금, 생활비의 월소득 대비 %입니다.</li>
+          <li><b>p, q</b>는 상승, 하락 확률, <b>b, a</b>는 상승 시 수익, 하락 시 손실입니다. 켈리 공식은 f = p/a − q/b 입니다.</li>
+          <li><b>A</b>는 투자가능 금액, <b>f</b>는 위에서 구한 주식 비율입니다. 50%는 0.5처럼 소수로 바꿔 계산합니다.</li>
+          <li><b>r1~r4</b>는 가격 변동률입니다. 상승이면 (1 + r), 하락이면 (1 − r)을 곱합니다. 변동하는 쪽만 곱하고 다른 쪽은 직전 값을 그대로 씁니다.</li>
+          <li>"최초"는 맨 위 투자 금액, "위"는 바로 위 리밸런싱 줄 값입니다. "마지막"은 4)번 리밸런싱 값입니다.</li>
+          <li>변동 순서는 이 그림에서 예시 순서(주식 상승, 채권 상승, 주식 하락, 채권 하락)입니다. 문제지 순서가 다르면 변동하는 쪽만 바꿔서 같은 방식으로 씁니다.</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <h3>쓸 때 지킬 규칙</h3>
+        <ul class="plain">
+          <li>소수 둘째 자리까지 쓰고, 셋째 자리부터는 버립니다. 반올림하지 않습니다.</li>
+          <li>식을 계산할 때마다 바로 버림합니다. 169.125는 169.12로 쓰고, 그 값으로 다음 계산을 합니다.</li>
+          <li>다음 변동은 항상 바로 위 리밸런싱 줄의 값에서 시작합니다.</li>
+          <li>리밸런싱 채권은 총자산 − 주식으로 구합니다.</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <h3>자주 틀리는 부분</h3>
+        <ul class="plain">
+          <li>리밸런싱 줄을 건너뛰고 변동 줄에서 바로 다음 변동을 계산합니다.</li>
+          <li>총자산을 변동 전 합계로 적습니다. 변동 후 주식과 채권을 더한 값입니다.</li>
+          <li>변동이 없는 쪽 자산의 칸을 비워 둡니다. 직전 값을 그대로 적어야 합니다.</li>
+          <li>맨 아래 칸에서 수익률 또는 손실률 체크, 이름 쓰기, 값 쓰기 중 하나를 빼먹습니다.</li>
+        </ul>
+      </div>
+
+      <div class="note">
+        <h3>제출 전 체크</h3>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="ck1">학번과 이름을 썼다</label></li>
+          <li><label><input type="checkbox" id="ck2">빨간 글씨 숫자가 내 문제지의 숫자와 같다</label></li>
+          <li><label><input type="checkbox" id="ck3">노란 칸을 빠짐없이 채웠다</label></li>
+          <li><label><input type="checkbox" id="ck4">모든 숫자가 소수 둘째 자리까지이고 반올림하지 않았다</label></li>
+          <li><label><input type="checkbox" id="ck5">총손익의 부호를 보고 수익률 또는 손실률을 체크(동그라미)했다</label></li>
+          <li><label><input type="checkbox" id="ck6">맨 아래 칸에 수익률 또는 손실률 값을 썼다</label></li>
+        </ul>
+      </div>
+
+      <details class="fold">
+        <summary>숫자로 된 예시 풀이 보기</summary>
+        <div class="inner">
+          <p class="hint">문제지의 예시와 같은 숫자입니다. 월소득 500, 투자가능 금액 200, f = 0.25로 시작해 손실률 0.63%가 나옵니다.</p>
+          <div class="ws" id="exSheet"></div>
+          <ol class="whylist" id="exWhy"></ol>
+        </div>
+      </details>
+
+      <details class="fold">
+        <summary>켈리 공식과 섀넌의 도깨비 한 줄 설명</summary>
+        <div class="inner">
+          <p><b>켈리 공식</b>은 돈을 한 번에 얼마나 걸어야 오래 반복했을 때 가장 잘 불어나는지 알려 주는 비율입니다. 이길 확률과 이길 때의 몫이 클수록 f가 커지고, 질 때 잃는 몫이 클수록 f가 작아집니다.</p>
+          <p><b>섀넌의 도깨비</b>는 리밸런싱입니다. 오른 자산을 일부 팔고 내린 자산을 사서 비율을 처음 f : (1 − f)로 되돌리면, 오르내리는 것만으로도 자산이 늘 수 있다는 아이디어입니다.</p>
+        </div>
+      </details>
+
+      <div class="note warn">
+        <h3>문제지에서 확인할 부분</h3>
+        <p>예시표 4번 줄에는 "채권가격 5% 하락"이라고 적혀 있습니다. 그런데 표의 숫자 145.03은 161.15에서 10%를 뺀 값이고, 5%라면 153.09가 됩니다. 이 페이지의 숫자 예시는 표의 숫자에 맞춰 10%로 계산했습니다. 시험에서는 내 문제지에 적힌 퍼센트를 쓰세요.</p>
+        <p>문제지 옆 메모에 "상승 시 이익률 125% 고정"이라고 적혀 있습니다. 예시 계산에는 이 값이 따로 쓰이지 않아서 무엇을 바꾸는 규칙인지 알 수 없습니다. 선생님께 한 번 확인하세요.</p>
+      </div>
+    </section>
+
+    <!-- ================= 2번 계산 연습 ================= -->
+    <section id="p2p" class="panel" role="tabpanel" hidden>
+      <div class="lead">
+        <h2><span class="nbadge">2</span>계산 연습</h2>
+        <p>문제지와 같은 표의 노란 칸을 직접 채우고 채점합니다. 빨간 글씨는 눌러서 내 문제지 숫자로 바꿀 수 있습니다.</p>
+      </div>
+
+      <div class="actions">
+        <button class="bt gold" id="btnRandom" type="button">새 랜덤 문제</button>
+        <button class="bt" id="btnExample" type="button">예시 문제</button>
+      </div>
+      <div class="actions">
+        <button class="bt gold" id="btnGrade" type="button">채점하기</button>
+        <button class="bt" id="btnFill" type="button">정답 채우기</button>
+        <button class="bt" id="btnClear" type="button">입력 지우기</button>
+      </div>
+      <p class="warnmsg fm" id="condMsg" role="alert" style="color:#B3122B;font-weight:700"></p>
+      <p class="fm" id="gradeMsg" aria-live="polite"></p>
+
+      <div class="ws" id="sheetHost"></div>
+
+      <details class="fold" id="whyBox">
+        <summary>단계별 풀이 보기</summary>
+        <div class="inner"><ol class="whylist" id="whyList"></ol></div>
+      </details>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+
+/*PURE-START*/
+const T=(x)=>Math.floor(x+1e-6);
+function fm(c){
+  const neg=c<0; c=Math.abs(c);
+  let s=(c/100).toFixed(2).replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'');
+  return (neg?'-':'')+s;
+}
+function fx(c){ return String(parseFloat((c/100).toFixed(4))); }
+function fF(f){ return String(parseFloat(f.toFixed(4))); }
+function compute(P){
+  const inc=Math.round(P.income*100);
+  const ins=T(inc*P.ins/100), pen=T(inc*P.pen/100), liv=T(inc*P.liv/100);
+  const inv=inc-ins-pen-liv;
+  let f=P.p/P.loss-(100-P.p)/P.gain;
+  const warn=[];
+  if(f<0||f>1){ warn.push('켈리 공식 값 f='+fF(f)+'가 0~1 범위를 벗어나 '+(f<0?'0':'1')+'로 맞춰 계산했습니다.'); f=Math.min(1,Math.max(0,f)); }
+  const s0=T(inv*f), b0=inv-s0;
+  const rows=[]; let s=s0,b=b0;
+  P.events.forEach((e,i)=>{
+    const before=e.asset==='stock'?s:b;
+    const after=T(before*(1+e.pct/100));
+    if(e.asset==='stock') s=after; else b=after;
+    const tot=s+b;
+    rows.push({type:'ev',i,e,s,b,tot,before,after});
+    const s2=T(tot*f), b2=tot-s2;
+    rows.push({type:'rb',i,s:s2,b:b2,tot,ds:s2-s,sPrev:s,bPrev:b,exact:tot*f});
+    s=s2; b=b2;
+  });
+  const dS=s-s0, dB=b-b0, dT=dS+dB;
+  const rate=inv>0?T(Math.abs(dT)*10000/inv):0;
+  return {inc,ins,pen,liv,inv,f,s0,b0,rows,dS,dB,dT,rate,kind:dT>=0?'gain':'loss',warn,fin:{s,b}};
+}
+/*PURE-END*/
+
+/* ============ 탭 ============ */
+const tabs=$$('.tab'), panels=$$('.panel');
+function showTab(id){
+  tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.t===id?'true':'false'));
+  panels.forEach(p=>{p.hidden=p.id!==id;});
+  store.set('ft_tab',id);
+}
+tabs.forEach(t=>t.addEventListener('click',()=>{showTab(t.dataset.t);window.scrollTo({top:0})}));
+(function(){const t=store.get('ft_tab','p1');showTab(['p1','p2g','p2p'].includes(t)?t:'p1');})();
+
+/* ============ 1번: 문장 데이터 ============ */
+const RAW=[
+"자산이란 {{경제적 가치}}가 있는 재산으로 토지, 건물, 기계 등 형태가 있는 {{!실물 자산}}과 현금이나 예금, 채권, 주식 등의 {{금융 자산}}이 있다.",
+"예금은 약속된 {{이자}}를 받기로 하고 금융 회사에 돈을 맡기는 금융 자산으로 {{!안전성}}은 높으나 {{수익성}}이 낮다.",
+"2025년 9월 1일부터 예금자 보호 한도가 기존 {{5000만원|5천만원|5천만}}에서 {{!1억원|1억}}으로 상향되었고, 은행, 저축은행 뿐만 아니라, {{신협}}, 농협, 수협, 산림조합, 새마을금고 등 {{상호금융권}}도 동일하게 적용된다.",
+"예금자 보호 제도는 다수 예금자가 동시에 은행의 {{지급 불능}}을 우려하여 예금을 인출하려는 {{!뱅크런}}을 막기 위한 것이다.",
+"예금자 보호 제도의 보호 대상 금융 상품에는 {{보통예금}}, 자유예금, 저축성예금, {{정기예금}} 등이 포함되며, {{!실적배당형}} 금융 상품, 투자상품 등은 보호 대상에서 제외된다.",
+"{{예금자 보호 제도}}는 예금과 {{대출}}이 같은 금융회사에 있을 경우 {{!상계}} 후 남은 금액이 보호 대상이 된다.",
+"예금에는 예금자가 원할 때 언제든 자금을 인출 할 수 있는 {{!요구불예금}}과 일정 기간 자금을 예치하기로 하고 금융기관이 만기일에 이자를 지급하는 방식으로 중도에 자금을 회수할 경우 약정 이자를 모두 받지 못할 수 있는 {{정기예금}}이 있다.",
+"{{!단리}}는 원금에 대해서만 이자를 계산하는 방식이고, {{복리}}는 이자가 발생할 때마다 그 이자를 원금에 합산하여 이후의 이자를 계산하는 방식이다.",
+"물가 상승률을 고려하지 않은 이자율을 {{명목 이자율}}이라 하고, 명목 이자율에서 물가 상승률을 차감한 값을 {{!실질 이자율}}이라 한다.",
+"{{대출}}, 예금, 채권 등의 이자율은 {{!명목 이자율|명목}}로 표시된다.",
+"{{실질 이자율}} = 명목 이자율 – {{!물가 상승률|물가상승률}}",
+"채권은 채권 매매에 따른 {{!시세 차익}} 및 {{이자 수익}}을 기대할 수 있다.",
+"발행 주체가 청산될 경우 {{채권자}}는 {{!주주}}보다 우선으로 변제를 받을 권리를 가진다.",
+"채권 증권에 표기된 원금 금액을 {{!액면가}}라 하고, 발행 주체는 {{만기일}}에 이 액면가를 상환한다.",
+"채권 발생 시 실제로 정기 지급되는 이자액을 {{!표면이자율}}( {{쿠폰 금리|쿠폰금리}} )라 한다.",
+"같은 채권이라도 {{시장이자율}}이 표면이자율보다 높으면 채권은 {{!할인}}되어 거래된다.",
+"{{!전환사채}}란 일정한 조건 하에 {{채권}}을 {{주식}}으로 전환할 수 있는 권리가 부여된 채권이다.",
+"{{시장 금리}}와 채권 가격은 {{!역}}의 관계이다.",
+"채권은 발행 주체가 약정한 이자나 {{!원금}}을 제때 갚지 못할 {{위험}}이 있다.",
+"채권은 발행 주체의 {{!신용등급}}이 낮아질수록 채권 가격이 {{하락}}하거나 추가 금리({{스프래드|스프레드}})를 요구받게 된다.",
+"채권의 원금 상환하는 약정 기한을 {{!만기}}라 하고 단기(1년 미만), 중기(1년~5년), {{장기}}(5년이상)가 있다.",
+"채권은 만기까지 보유한다면 원칙적으로 액면가 상환과 이자 누적을 통해 {{!예측 가능한}} 수익 구조를 갖지만, 만기 전 {{중도 매매}} 시에는 금리, 신용 여건에 따라 수익이 달라진다.",
+"중앙정부가 발행하는 채권을 {{국채}}, 지방정부가 발행하는 채권을 {{!지방채}}라 한다.",
+"{{!국채금리}}는 다른 금융상품의 가격 책정과 대출·예금 금리의 {{기준}}으로 작동하여 경제 전반의 금리 수준을 안내하는 역할을 수행한다.",
+"주식은 투자자의 {{!지분}}을 표시하여 발행하는 증서로 회사의 {{주주}}가 되어 기업의 의사 결정에 참여할 수 있다.",
+"회사가 {{이익}}을 낸 경우 {{주주}}가 그 이익의 일부를 분배받을 권리를 {{!배당권}}이라 한다.",
+"새 주식이 발행될 때 기존 주주의 지분 비율이 과도하게 낮아지지 않도록 보호하는 {{지분 보전}} 장치로 {{!신주인수권}}이 있다.",
+"{{비상장회사}}가 처음으로 일반 투자자에게 주식을 공개해 상장하는 절차를 {{!기업공개|IPO}}라 한다.",
+"회사가 {{새 주식}}을 발행하고 그 대가로 {{현금}}을 받는 {{자본 조달}} 방식을 {{!유상증자}}라 한다.",
+"회사가 보유 중인 {{잉여 재원}}을 주식 형태로 나누어 주주에게 분배하는 방식을 {{!무상증자}}라 한다.",
+"{{우선주}}는 배당과 청산에서 보통주보다 분배 순위가 앞서는 주식이며 그 대가로 {{!의결권}}이 제한되거나 없을 수 있다.",
+"회사가 청산될 때 {{채권자}}와 {{우선주}}가 먼저 변제·분배를 받고, {{!보통주}}는 잔여가 있을 때만 배분을 받는다.",
+"상장회사는 {{공시의무|공시}}를 통해 주요 정보를 시장에 제공해야 하며 이는 모든 위험을 소멸시킬 수는 없지만 투자 판단의 기초 자료를 제공하기에 {{!정보 비대칭|정보비대칭}}을 줄이는 역할을 수행한다.",
+"주식은 발행자의 {{!자본금}} 증가에, 채권은 발행자의 {{부채}} 증가에 영향을 미친다.",
+"투자자는 주식을 통해 {{!배당 수익}}과 {{시세 차익}}을, 채권을 통해 {{이자 수익}}과 시세 차익을 얻을 수 있다.",
+"회사가 {{자사주}}를 {{!소각}}하면 기존 주주의 주당 몫이 상승하여 주당 가치가 상승한다.",
+"회사가 청산될 때 남은 재산은 채권자 등 {{우선 변제}} 대상에게 지급된 뒤, 남는 재산을 {{!지분 비율|지분비율}}에 따라 배분 받을 수 있다.",
+"주식은 투자 {{!원금}}을 보장하거나 {{이자}}를 지급하지 않는다.",
+"주주는 투자한 금액 {{!한도}}에서 {{손실}}을 부담한다.",
+"보험은 {{수익 극대화}}보다 사고에 따른 {{!손실 최소화}}를 주목적으로 한다.",
+"보험은 미래에 발생할 수 있는 예상치 못한 사고나 손해에 대비하여 일정한 금액을 {{!공동으로|공동}} 부담하고 사고나 손해가 발생했을 때 그 손해를 {{보상}}받는 제도이다.",
+"보험의 종류에는 {{생명 보험}}, 건강 보험, {{자동차 보험}}, 손해 보험, 연금 보험, {{!변액 보험}}이 있다.",
+"{{변액 보험}}은 보험료의 일부를 주식, 채권 등 다양한 투자 자산에 운용하여 {{!투자 수익}}에 따라 보험금이 변동되는 보험 상품이다.",
+"연금은 국가가 운용하는 {{공적 연금}}, 기업이 보장하는 {{!퇴직 연금}}, 개인이 가입하는 {{개인연금}} 등이 있다.",
+"연금은 개인이 {{!노후}}나 은퇴 후 경제적 안정을 위해 일정 기간 동안 일정 금액을 납입하고 그 대가로 일정 시점부터 {{정기적}}으로 일정한 금액을 지급 받는 금융 제도이다.",
+"국가가 운영하는 공적 연금 제도에는 {{국민연금}}, {{공무원연금}}, 군인 연금 등이 있으며 법적으로 가입이 {{!의무화}}되어 있다.",
+"{{퇴직 연금}}은 {{!기업}}이 근로자의 퇴직 후 생활을 지원하기 위해 마련된 연금 제도이다.",
+"{{펀드}}는 금융 기관에 돈을 맡겨, 대신 투자하도록 하는 {{간접 투자}} 방식으로 별도의 {{!수수료}}를 납부해야 한다.",
+"주식, 채권, 부동산, 외환 거래 등은 {{투자자}}가 스스로 금융 상품을 선택하고 {{관리}}하는 {{!직접 투자}} 상품이다.",
+"{{펀드}}, {{ETF}}, {{리츠}} 등은 전문가나 금융 기관이 투자자를 대신하여 투자하므로 {{!간접 투자}} 상품이다."
+];
+function parseS(raw,id){
+  const parts=[],blanks=[]; let last=0,m; const re=/\{\{(!?)([^}]+)\}\}/g;
+  while((m=re.exec(raw))){
+    if(m.index>last) parts.push({t:raw.slice(last,m.index)});
+    parts.push({b:blanks.length});
+    blanks.push({a:m[2].split('|'),pri:m[1]==='!'});
+    last=re.lastIndex;
+  }
+  if(last<raw.length) parts.push({t:raw.slice(last)});
+  const di=blanks.findIndex(x=>x.pri);
+  return {id,parts,blanks,def:di<0?0:di};
+}
+const S=RAW.map((r,i)=>parseS(r,i+1));
+const band=id=>id<=11?'g1':id<=24?'g2':id<=39?'g3':id<=43?'g4':id<=47?'g5':'g0';
+const norm=s=>s.toLowerCase().replace(/[\s·.,]/g,'');
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+const qbody=$('#qbody'), scoreRow=$('#scoreRow'), scoreBar=$('#scoreBar'), bankBox=$('#bankBox'), dockText=$('#dockText'), noteLine=$('#noteLine');
+let cur=[], lastInput=null, noteTimer=0;
+let wrongSet=new Set(store.get('ft_wrong',[]));
+function saveWrong(){store.set('ft_wrong',[...wrongSet]);}
+function note(t){ noteLine.textContent=t; clearTimeout(noteTimer); noteTimer=setTimeout(()=>{noteLine.textContent='';},3500); }
+
+function start(){
+  const r=$('#range').value;
+  let list;
+  if(r==='wrong'){ list=S.filter(s=>wrongSet.has(s.id)); }
+  else { const [a,b]=r.split('-').map(Number); list=S.filter(s=>s.id>=a&&s.id<=b); }
+  if($('#shuffle').checked) list=shuffle(list);
+  const rb=$('#randBlank').checked;
+  cur=list.map(s=>({s,bi:rb?Math.floor(Math.random()*s.blanks.length):s.def,state:'idle',li:null,inp:null,msg:null}));
+  render();
+}
+function render(){
+  qbody.innerHTML='';
+  const hd=document.createElement('tr');
+  hd.innerHTML='<td colspan="2" class="ph" style="height:auto;min-height:0;padding:.25em .6em">1. 금융자산의 특징</td>';
+  qbody.appendChild(hd);
+  if(!cur.length){
+    const tr=document.createElement('tr'); tr.innerHTML='<td colspan="2" class="t empty-t">'+($('#range').value==='wrong'?'아직 틀린 문장이 없습니다. 먼저 다른 범위를 풀어 보세요.':'문장이 없습니다.')+'</td>';
+    qbody.appendChild(tr);
+  }
+  cur.forEach(it=>qbody.appendChild(buildRow(it)));
+  buildBank(); upd();
+}
+function reroll(){
+  if(!cur.length) return;
+  let changed=0;
+  cur.forEach(it=>{
+    const n=it.s.blanks.length;
+    if(n>1){ let k; do{k=Math.floor(Math.random()*n);}while(k===it.bi); it.bi=k; changed++; }
+    it.state='idle';
+  });
+  render();
+  note('빈칸 위치를 바꿨습니다. 문장 '+changed+'개의 빈칸이 달라졌어요.');
+  window.scrollTo({top:$('#sheet1').getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'});
+}
+function buildRow(it){
+  const s=it.s, tr=document.createElement('tr'); tr.className='q '+band(s.id); it.li=tr;
+  const n=document.createElement('td'); n.className='n'; n.textContent=s.id;
+  const t=document.createElement('td'); t.className='t';
+  const p=document.createElement('div'); p.className='sent';
+  s.parts.forEach(pt=>{
+    if(pt.t!==undefined){ p.appendChild(document.createTextNode(pt.t)); }
+    else if(pt.b===it.bi){
+      const inp=document.createElement('input');
+      inp.type='text'; inp.className='blank'; inp.autocomplete='off'; inp.spellcheck=false;
+      inp.setAttribute('autocapitalize','off'); inp.setAttribute('enterkeyhint','next'); inp.setAttribute('aria-label',s.id+'번 문장 빈칸');
+      const len=Math.max(...s.blanks[pt.b].a.map(x=>x.replace(/\s/g,'').length));
+      inp.style.width=Math.max(5.5,len*1.1+1.4)+'em';
+      inp.addEventListener('keydown',e=>{
+        if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); check(it,false); focusNext(it); }
+      });
+      inp.addEventListener('input',()=>{ if(it.state!=='idle'&&it.state!=='shown'){ setState(it,'idle',''); upd(); } });
+      inp.addEventListener('focus',()=>{lastInput=it;});
+      it.inp=inp; p.appendChild(inp);
+    } else { p.appendChild(document.createTextNode(s.blanks[pt.b].a[0])); }
+  });
+  const acts=document.createElement('div'); acts.className='acts';
+  const hb=document.createElement('button'); hb.type='button'; hb.className='mini'; hb.textContent='힌트';
+  const ab=document.createElement('button'); ab.type='button'; ab.className='mini'; ab.textContent='정답';
+  const msg=document.createElement('span'); msg.className='msg'; it.msg=msg;
+  hb.addEventListener('click',()=>{
+    const a=s.blanks[it.bi].a[0], len=a.replace(/\s/g,'').length;
+    msg.textContent='힌트: '+len+'글자, 첫 글자 "'+a.trim()[0]+'"';
+  });
+  ab.addEventListener('click',()=>reveal(it));
+  acts.append(hb,ab,msg);
+  t.append(p,acts); tr.append(n,t);
+  return tr;
+}
+function setState(it,st,text){
+  it.state=st; it.li.classList.remove('ok','bad','shown');
+  if(st!=='idle') it.li.classList.add(st);
+  it.msg.textContent=text||'';
+}
+function check(it,all){
+  const val=it.inp.value;
+  if(!val.trim()){ if(all){ setState(it,'bad','비어 있음'); wrongSet.add(it.s.id);} else { it.msg.textContent='답을 입력하세요'; } saveWrong(); upd(); return; }
+  const ok=it.s.blanks[it.bi].a.some(a=>norm(a)===norm(val));
+  if(ok){ setState(it,'ok','정답'); wrongSet.delete(it.s.id); }
+  else { setState(it,'bad','다시 생각해 보세요'); wrongSet.add(it.s.id); }
+  saveWrong(); upd();
+}
+function reveal(it){
+  it.inp.value=it.s.blanks[it.bi].a[0];
+  setState(it,'shown','정답: '+it.s.blanks[it.bi].a[0]);
+  wrongSet.add(it.s.id); saveWrong(); upd();
+}
+function focusNext(it){
+  const i=cur.indexOf(it);
+  for(let k=i+1;k<cur.length;k++){ if(cur[k].state==='idle'){ cur[k].inp.focus(); return; } }
+}
+function upd(){
+  const n=cur.length;
+  const ok=cur.filter(x=>x.state==='ok').length;
+  const bad=cur.filter(x=>x.state==='bad'||x.state==='shown').length;
+  scoreRow.innerHTML='<span class="ok-t">맞음 <b>'+ok+'</b></span><span class="bad-t">틀림 <b>'+bad+'</b></span><span>남음 <b>'+(n-ok-bad)+'</b></span><span>저장된 오답 <b>'+wrongSet.size+'</b></span>';
+  dockText.textContent='맞음 '+ok+' / '+n;
+  scoreBar.style.width=(n?ok/n*100:0)+'%';
+}
+function buildBank(){
+  if(!$('#bank').checked||!cur.length){ bankBox.hidden=true; return; }
+  const words=shuffle([...new Set(cur.map(it=>it.s.blanks[it.bi].a[0]))]);
+  bankBox.innerHTML='';
+  words.forEach(w=>{
+    const b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=w;
+    b.addEventListener('click',()=>{
+      let t=lastInput&&lastInput.state==='idle'?lastInput:cur.find(x=>x.state==='idle'&&!x.inp.value);
+      if(t){ t.inp.value=w; t.inp.focus(); }
+    });
+    bankBox.appendChild(b);
+  });
+  bankBox.hidden=false;
+}
+function gradeAll(){ cur.forEach(it=>{ if(it.state!=='shown') check(it,true); }); }
+$$('[data-act]').forEach(b=>b.addEventListener('click',()=>{
+  const a=b.dataset.act;
+  if(a==='reroll') reroll(); else if(a==='start') start(); else if(a==='grade') gradeAll();
+}));
+$('#range').addEventListener('change',start);
+$('#shuffle').addEventListener('change',start);
+$('#bank').addEventListener('change',buildBank);
+$('#revealAll').addEventListener('click',()=>cur.forEach(reveal));
+start();
+
+/* ============ 2번: 문제지 표 ============ */
+const EX={income:500,ins:10,pen:10,liv:40,p:50,gain:50,loss:40,events:[
+  {asset:'stock',pct:10},{asset:'bond',pct:10},{asset:'stock',pct:-10},{asset:'bond',pct:-10}]};
+const aName=a=>a==='stock'?'주식':'채권가격';
+const COLS='<colgroup>'+'<col style="width:16.6667%">'.repeat(6)+'</colgroup>';
+
+/* mode: 'practice' 입력칸 / 'answer' 정답 표시 / 'symbol' 문자식 */
+function wsHTML(P,K,mode,pre){
+  const pr=mode==='practice', an=mode==='answer', sy=mode==='symbol';
+  const evs=sy?[{asset:'stock',pct:1},{asset:'bond',pct:1},{asset:'stock',pct:-1},{asset:'bond',pct:-1}]:P.events;
+  const Y=(key,c,row,label,formula,cs,neg)=>{
+    const a=cs?' colspan="'+cs+'"':'';
+    if(sy) return '<td class="y sym"'+a+'>'+formula+'</td>';
+    if(an) return '<td class="y num"'+a+'>'+fm(c)+'</td>';
+    return '<td class="y"'+a+'><input class="cell" id="'+pre+key+'" data-exp="'+c+'" data-row="'+row+'"'+(neg?'':' inputmode="decimal"')+' autocomplete="off" spellcheck="false" aria-label="'+label+'"></td>';
+  };
+  const rv=(k,val,sym,w,label)=>sy?sym:(pr?'<input class="rv" data-k="'+k+'" value="'+val+'" inputmode="decimal" autocomplete="off" aria-label="'+label+'" style="width:'+Math.max(1.4,String(val).length*0.62+0.4)+'em">':String(val));
+  const rsel=(k,val,opts,label)=>pr
+    ?'<select class="rv" data-k="'+k+'" aria-label="'+label+'" style="width:'+(((opts.find(o=>String(o[0])===String(val))||[0,''])[1]).length*1.04+0.3)+'em">'+opts.map(o=>'<option value="'+o[0]+'"'+(String(o[0])===String(val)?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'
+    :(opts.find(o=>String(o[0])===String(val))||[0,''])[1];
+  const evLab=(e,i)=>{
+    const n=i+1;
+    if(sy) return n+') '+aName(e.asset)+' r'+n+'% '+(e.pct>0?'상승':'하락');
+    const up=e.pct>=0;
+    if(pr) return n+') '+rsel('ev'+i+'a',e.asset,[['stock','주식'],['bond','채권가격']],n+'번 변동 대상')+' '+rv('ev'+i+'p',Math.abs(e.pct),'',3,n+'번 변동률')+'% '+rsel('ev'+i+'d',up?'1':'-1',[['1','상승'],['-1','하락']],n+'번 변동 방향');
+    return n+') '+aName(e.asset)+' '+Math.abs(e.pct)+'% '+(up?'상승':'하락');
+  };
+  const q=sy?'q':String(100-P.p);
+  const tag=pr?'연습':an?'예시':'풀이';
+  let h='';
+
+  /* ---- 표 1 ---- */
+  h+='<table class="w">'+COLS+'<tbody>'
+   +'<tr><td colspan="6" class="ph">2. 금융생활 설계 &nbsp;<span class="tagb">['+tag+']</span></td></tr>'
+   +'<tr><td>월소득</td><td colspan="2" class="r num">'+rv('inc',P&&P.income,'M',5,'월소득')+'</td>'
+   +'<td colspan="3" rowspan="2" class="inv">■ 투자 비율 : <u>켈리 공식</u> 적용<br>&nbsp;&nbsp;주식 : <span class="r">확률[+'+rv('p',P&&P.p,'p',3,'상승 확률')+'%, -'+q+'%]</span><br>&emsp;&emsp;&emsp;&nbsp;<span class="r">수익[+'+rv('b',P&&P.gain,'b',3,'상승 시 수익')+'%, -'+rv('a',P&&P.loss,'a',3,'하락 시 손실')+'%]</span></td></tr>'
+   +'<tr><td>보험</td><td class="r">월소득 '+rv('ins',P&&P.ins,'a',3,'보험 비율')+'%</td>'+Y('ins',K&&K.ins,'a','보험 금액','M×a%')+'</tr>'
+   +'<tr><td>연금</td><td class="r">월소득 '+rv('pen',P&&P.pen,'b',3,'연금 비율')+'%</td>'+Y('pen',K&&K.pen,'a','연금 금액','M×b%')
+   +'<td colspan="3" class="y fcell'+(sy?' sym':'')+'">'+(sy?'f = [ p/a − q/b ]':(an?'f = [ '+fF(K.f)+' ]':'f = [ <input class="cell" id="'+pre+'f" data-kind="f" data-expf="'+K.f+'" data-row="k" inputmode="decimal" autocomplete="off" aria-label="f 값"> ]'))+'</td></tr>'
+   +'<tr><td>생활비</td><td class="r">월소득 '+rv('liv',P&&P.liv,'c',3,'생활비 비율')+'%</td>'+Y('liv',K&&K.liv,'a','생활비 금액','M×c%')
+   +'<td>주식투자금액</td><td>채권투자금액</td><td>투자가능금액</td></tr>'
+   +'<tr><td>투자가능 금액</td>'+Y('inv',K&&K.inv,'a','투자가능 금액','M−보험−연금−생활비',2)+Y('s0',K&&K.s0,'b','주식 투자금액','A×f')+Y('b0',K&&K.b0,'b','채권 투자금액','A−주식')+Y('inv2',K&&K.inv,'b','투자가능 금액(오른쪽)','A')+'</tr>'
+   +'</tbody></table><div class="gap"></div>';
+
+  /* ---- 표 2 ---- */
+  h+='<table class="w">'+COLS+'<tbody>'
+   +'<tr><td colspan="3" class="b">■ 리밸런싱 : <u>섀넌의 도깨비</u> 적용</td><td class="c">주식</td><td class="c">채권</td><td class="c">총자산</td></tr>';
+  evs.forEach((e,i)=>{
+    const n=i+1, up=sy?e.pct>0:e.pct>=0, sg=up?'+':'−';
+    const re=sy?null:K.rows[2*i], rb=sy?null:K.rows[2*i+1];
+    const pS=i===0?'최초 주식':'위 주식', pB=i===0?'최초 채권':'위 채권';
+    const fS=e.asset==='stock'?pS+'×(1'+sg+'r'+n+')':pS;
+    const fB=e.asset==='bond'?pB+'×(1'+sg+'r'+n+')':pB;
+    h+='<tr><td colspan="3" class="r">'+evLab(e,i)+'</td>'
+      +Y('es'+i,re&&re.s,'e'+i,n+'번 변동 후 주식',fS)+Y('eb'+i,re&&re.b,'e'+i,n+'번 변동 후 채권',fB)+Y('et'+i,re&&re.tot,'e'+i,n+'번 변동 후 총자산','주식+채권')+'</tr>'
+      +'<tr><td colspan="3" class="ind">리밸런싱</td>'
+      +Y('rs'+i,rb&&rb.s,'r'+i,n+'번 리밸런싱 주식','총자산×f')+Y('rb'+i,rb&&rb.b,'r'+i,n+'번 리밸런싱 채권','총자산−주식')+'<td class="dg"></td></tr>';
+  });
+  h+='<tr><td colspan="3" class="ind">[최종금액 &nbsp;-&nbsp; 최초금액]</td>'
+    +Y('ds',K&&K.dS,'z','주식 손익','마지막−최초',0,true)+Y('db',K&&K.dB,'z','채권 손익','마지막−최초',0,true)+Y('dt',K&&K.dT,'z','총 손익','주식+채권 손익',0,true)+'</tr>';
+
+  const pick=(v,txt)=>pr?'<button type="button" class="pickb" data-v="'+v+'">'+txt+'</button>'
+    :an?'<span'+(K.kind===v?' class="oval"':'')+'>'+txt+'</span>':'<span>'+txt+'</span>';
+  h+='<tr><td colspan="3" class="y fl">&nbsp;[수익률: '+pick('gain','수익/투자가능금액')+'],<br>&nbsp;[손실률: '+pick('loss','손실/투자가능금액')+']</td>'
+    +'<td colspan="2" class="dg mid">'+(sy?'|총손익| ÷ A × 100':an?fm(Math.abs(K.dT))+'/'+fm(K.inv)+'*100='+fm(K.rate):'<input class="calc" id="'+pre+'calc" autocomplete="off" aria-label="계산식 쓰기">')+'</td>'
+    +'<td class="y res">'+(sy?'<span style="color:#000;font-weight:400">수익률 또는 손실률<br>값 %</span>'
+      :an?(K.kind==='gain'?'수익률':'손실률')+'<br>'+fm(K.rate)+'%'
+      :'<div id="'+pre+'word">'+(K.kind==='gain'?'수익률':'손실률')+'</div><div class="rr"><input class="cell" id="'+pre+'rate" data-exp="'+K.rate+'" data-row="x" inputmode="decimal" autocomplete="off" aria-label="비율 값"><span>%</span></div>')+'</td></tr>'
+    +'</tbody></table>';
+
+  h+='<div class="notebox"><div>[유의 사항]</div>'
+    +'<div>▶단위 : 만원</div>'
+    +'<div>▶계산 후 기록은 소수점 둘째 자리까지 씀.(셋째 자리부터 버림-반올림 아님)</div>'
+    +'<div>▶빨간 글씨 부분 – 반별 상이한 부분</div>'
+    +'<div>▶노란색 칸 – 학생이 계산해서 채워야 할 부분</div>'
+    +'<div>▶주식과 채권에만 투자하는 것으로 가정함.</div>'
+    +'<div>▶실제 주식, 채권 매입, 매도 상황과 일치하지 않으며 주어진 조건 하에서만 계산함.</div>'
+    +'<div>▶래버리지(대출) 투자는 허용하지 않음.</div>'
+    +'<div>▶상승시 수익률125% 고정</div>'
+    +'<div>▶변동성: 주식(상승, 하락), 채권(상승,하락) 각 1회씩 4회</div></div>';
+  return h;
+}
+
+/* 단계별 풀이 */
+function whyHTML(P,K){
+  const r4=x=>String(parseFloat(x.toFixed(4)));
+  const li=(row,t,hh)=>'<li data-row="'+row+'"><b>'+t+'</b><br>'+hh+'</li>';
+  let h='';
+  h+=li('a','월소득 나누기','보험 '+fm(K.inc)+' × '+P.ins+'% = '+fm(K.ins)+', 연금 '+fm(K.inc)+' × '+P.pen+'% = '+fm(K.pen)+', 생활비 '+fm(K.inc)+' × '+P.liv+'% = '+fm(K.liv)+'<br>투자가능 금액 = '+fm(K.inc)+' − '+fm(K.ins)+' − '+fm(K.pen)+' − '+fm(K.liv)+' = <b>'+fm(K.inv)+'</b>');
+  h+=li('k','켈리 공식 f','f = p/a − q/b = '+P.p+'/'+P.loss+' − '+(100-P.p)+'/'+P.gain+' = '+r4(P.p/P.loss)+' − '+r4((100-P.p)/P.gain)+' = <b>'+fF(K.f)+'</b>'+(K.warn.length?'<br>'+K.warn.join(' '):''));
+  h+=li('b','최초 투자','주식 = '+fm(K.inv)+' × '+fF(K.f)+' = '+fx(K.inv*K.f)+' → 버림 <b>'+fm(K.s0)+'</b>, 채권 = '+fm(K.inv)+' − '+fm(K.s0)+' = <b>'+fm(K.b0)+'</b>');
+  K.rows.forEach(r=>{
+    if(r.type==='ev'){
+      const mult=(1+r.e.pct/100), nm=r.e.asset==='stock'?'주식':'채권';
+      h+=li('e'+r.i,(r.i+1)+') '+aName(r.e.asset)+' '+Math.abs(r.e.pct)+'% '+(r.e.pct>=0?'상승':'하락'),
+        nm+' '+fm(r.before)+' × '+r4(mult)+' = '+fx(r.before*mult)+' → 버림 <b>'+fm(r.after)+'</b>. '+(r.e.asset==='stock'?'채권은 그대로 '+fm(r.b):'주식은 그대로 '+fm(r.s))+'.<br>총자산 = '+fm(r.s)+' + '+fm(r.b)+' = <b>'+fm(r.tot)+'</b>');
+    } else {
+      const mv=Math.abs(r.ds);
+      const dir=r.ds<0?'주식을 '+fm(mv)+' 팔아 채권을 삽니다':(r.ds>0?'채권을 '+fm(mv)+' 팔아 주식을 삽니다':'옮길 금액이 없습니다');
+      h+=li('r'+r.i,(r.i+1)+') 리밸런싱','주식 = '+fm(r.tot)+' × '+fF(K.f)+' = '+fx(r.exact)+' → 버림 <b>'+fm(r.s)+'</b>, 채권 = '+fm(r.tot)+' − '+fm(r.s)+' = <b>'+fm(r.b)+'</b><br>'+dir+'.');
+    }
+  });
+  h+=li('z','최종금액 − 최초금액','주식 '+fm(K.fin.s)+' − '+fm(K.s0)+' = <b>'+fm(K.dS)+'</b>, 채권 '+fm(K.fin.b)+' − '+fm(K.b0)+' = <b>'+fm(K.dB)+'</b>, 합계 <b>'+fm(K.dT)+'</b>');
+  h+=li('x','수익률 또는 손실률','|'+fm(K.dT)+'| ÷ '+fm(K.inv)+' × 100 = <b>'+fm(K.rate)+'</b> → 총손익이 '+(K.dT>=0?'0 이상이므로 수익률':'음수이므로 손실률')+' '+fm(K.rate)+'%. 손실/투자가능금액 쪽이 아니라 해당하는 쪽에 동그라미를 치고, 이름과 값을 씁니다.');
+  return h;
+}
+
+/* 풀이법 탭 */
+$('#symSheet').innerHTML=wsHTML(null,null,'symbol','s-');
+(function(){
+  const K=compute(EX);
+  $('#exSheet').innerHTML=wsHTML(EX,K,'answer','g-');
+  $('#exWhy').innerHTML=whyHTML(EX,K);
+})();
+
+/* ============ 계산 연습 ============ */
+const host=$('#sheetHost'), gradeMsg=$('#gradeMsg'), condMsg=$('#condMsg'), whyList=$('#whyList'), whyBox=$('#whyBox');
+let CUR=null;
+function validate(P){
+  const nums=[P.income,P.ins,P.pen,P.liv,P.p,P.gain,P.loss,...P.events.map(e=>e.pct)];
+  if(nums.some(x=>!isFinite(x))) return '빨간 글씨 칸에 숫자를 입력하세요.';
+  if(P.income<=0) return '월소득은 0보다 커야 합니다.';
+  if(P.ins<0||P.pen<0||P.liv<0) return '비율은 0 이상이어야 합니다.';
+  if(P.ins+P.pen+P.liv>=100) return '보험, 연금, 생활비 비율의 합이 100% 미만이어야 투자할 돈이 남습니다.';
+  if(P.p<=0||P.p>=100) return '상승 확률은 0과 100 사이여야 합니다.';
+  if(P.gain<=0||P.loss<=0) return '수익과 손실은 0보다 커야 합니다.';
+  if(P.events.some(e=>e.pct<=-100||e.pct===0)) return '변동률은 0보다 크고 하락은 100% 미만이어야 합니다.';
+  return '';
+}
+function setProblem(P){
+  CUR={P,K:compute(P)};
+  host.innerHTML=wsHTML(P,CUR.K,'practice','p-');
+  whyList.innerHTML=whyHTML(P,CUR.K);
+  gradeMsg.textContent='';
+  condMsg.textContent=CUR.K.warn.join(' ');
+}
+function readP(){
+  const g=k=>{const el=$('[data-k="'+k+'"]',host);return el?el.value:'';};
+  const n=k=>parseFloat(g(k));
+  return {income:n('inc'),ins:n('ins'),pen:n('pen'),liv:n('liv'),p:n('p'),gain:n('b'),loss:n('a'),
+    events:[0,1,2,3].map(i=>({asset:g('ev'+i+'a'),pct:parseFloat(g('ev'+i+'d'))*n('ev'+i+'p')}))};
+}
+host.addEventListener('change',e=>{
+  if(!e.target.classList.contains('rv')) return;
+  const P=readP(), err=validate(P);
+  if(err){ condMsg.textContent=err; return; }
+  setProblem(P);
+});
+function randomProblem(){
+  const pick=a=>a[Math.floor(Math.random()*a.length)];
+  for(let t=0;t<2000;t++){
+    const p=pick([40,50,60]), b=pick([30,40,50,60,70,80]), a=pick([20,25,30,40,50]);
+    const f=p/a-(100-p)/b;
+    if(f<0.1||f>0.6||Math.abs(f*20-Math.round(f*20))>1e-9) continue;
+    const ins=pick([5,10,15]), pen=pick([5,10,15]), liv=pick([30,40,50]);
+    const pc=()=>pick([5,10,15,20]);
+    const evs=shuffle([{asset:'stock',pct:pc()},{asset:'stock',pct:-pc()},{asset:'bond',pct:pc()},{asset:'bond',pct:-pc()}]);
+    return {income:pick([300,400,500,600,800,1000]),ins,pen,liv,p,gain:b,loss:a,events:evs};
+  }
+  return EX;
+}
+function parseNum(s){
+  s=s.trim().replace(/[−–—]/g,'-').replace(/[,\s]/g,'').replace(/(만원|%)$/,'');
+  return /^-?\d+(\.\d+)?$/.test(s)?s:null;
+}
+function gradeCell(inp){
+  const raw=inp.value; if(!raw.trim()) return 'bad';
+  const s=parseNum(raw); if(s===null) return 'bad';
+  let v=parseFloat(s);
+  if(inp.dataset.kind==='f'){
+    if(/%$/.test(raw.trim())||v>1) v=v/100;
+    return Math.abs(v-parseFloat(inp.dataset.expf))<0.0006?'ok':'bad';
+  }
+  if((s.split('.')[1]||'').length>2) return 'bad';
+  return Math.round(v*100)===parseInt(inp.dataset.exp,10)?'ok':'bad';
+}
+function boxOf(inp){ return inp.closest('td'); }
+function grade(){
+  if(!CUR) return;
+  const inputs=$$('input.cell',host);
+  let ok=0, total=inputs.length+1; const badRows=new Set(); let firstBad=null;
+  inputs.forEach(inp=>{
+    const st=gradeCell(inp), box=boxOf(inp);
+    if(box.classList.contains('res')) { /* 비율 칸은 아래에서 함께 표시 */ }
+    box.classList.remove('ok','bad','shown'); box.classList.add(st);
+    if(st==='ok') ok++; else { badRows.add(inp.dataset.row); if(!firstBad) firstBad=inp; }
+  });
+  const kindOk=($('.pickb.on',host)||{dataset:{}}).dataset.v===CUR.K.kind;
+  if(kindOk) ok++; else badRows.add('x');
+  $$('li',whyList).forEach(l=>l.classList.toggle('attn',badRows.has(l.dataset.row)));
+  const good=ok===total;
+  gradeMsg.innerHTML='<span class="'+(good?'ok-t':'bad-t')+'">'+total+'개 중 <b>'+ok+'</b>개 정답</span>'
+    +(kindOk?'':' · 수익률/손실률 공식에 동그라미(체크)를 하세요')
+    +(good?' · 모두 맞았습니다. 새 문제에 도전해 보세요.':' · 틀린 칸은 아래 "단계별 풀이"에서 빨간 줄을 확인하세요.');
+  if(!good) whyBox.open=true;
+  if(firstBad) firstBad.focus();
+}
+function fillAnswers(){
+  if(!CUR) return;
+  $$('input.cell',host).forEach(inp=>{
+    inp.value=inp.dataset.kind==='f'?fF(CUR.K.f):fm(parseInt(inp.dataset.exp,10));
+    const b=boxOf(inp); b.classList.remove('ok','bad'); b.classList.add('shown');
+  });
+  $$('.pickb',host).forEach(b=>b.classList.toggle('on',b.dataset.v===CUR.K.kind));
+  $('#p-calc').value=fm(Math.abs(CUR.K.dT))+'/'+fm(CUR.K.inv)+'*100='+fm(CUR.K.rate);
+  gradeMsg.textContent='정답을 채웠습니다. 아래 "단계별 풀이"로 과정을 따라가 보세요.';
+  $$('li',whyList).forEach(l=>l.classList.remove('attn'));
+}
+function clearAnswers(){
+  if(!CUR) return;
+  $$('input.cell,input.word,input.calc',host).forEach(inp=>{inp.value='';const b=boxOf(inp);if(b)b.classList.remove('ok','bad','shown');});
+  $$('.pickb',host).forEach(b=>b.classList.remove('on'));
+  $$('li',whyList).forEach(l=>l.classList.remove('attn'));
+  gradeMsg.textContent='';
+}
+host.addEventListener('click',e=>{
+  const b=e.target.closest('.pickb'); if(!b) return;
+  $$('.pickb',host).forEach(x=>x.classList.toggle('on',x===b));
+});
+host.addEventListener('input',e=>{
+  if(e.target.classList.contains('cell')||e.target.classList.contains('word')){ const b=boxOf(e.target); if(b) b.classList.remove('ok','bad','shown'); }
+});
+$('#btnGrade').addEventListener('click',grade);
+$('#btnFill').addEventListener('click',fillAnswers);
+$('#btnClear').addEventListener('click',clearAnswers);
+$('#btnRandom').addEventListener('click',()=>setProblem(randomProblem()));
+$('#btnExample').addEventListener('click',()=>setProblem(EX));
+setProblem(randomProblem());
+})();
+</script>
