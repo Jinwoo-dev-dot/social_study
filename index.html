@@ -208,7 +208,7 @@ summary::marker{color:#C9A400}
         </div>
         <div class="crow">
           <label><input type="checkbox" id="shuffle">순서 섞기</label>
-          <label><input type="checkbox" id="randBlank" checked>새로 시작할 때 빈칸 랜덤</label>
+          <label><input type="checkbox" id="randBlank" checked>빈칸을 문장 속 아무 핵심 단어로 랜덤</label>
           <label><input type="checkbox" id="bank">보기 단어 보이기</label>
         </div>
         <div class="actions">
@@ -465,8 +465,37 @@ const RAW=[
 "주식, 채권, 부동산, 외환 거래 등은 {{투자자}}가 스스로 금융 상품을 선택하고 {{관리}}하는 {{!직접 투자}} 상품이다.",
 "{{펀드}}, {{ETF}}, {{리츠}} 등은 전문가나 금융 기관이 투자자를 대신하여 투자하므로 {{!간접 투자}} 상품이다."
 ];
+/*AUTO-START*/
+const PARTICLES=['에서는','으로는','이라고','이라는','에게서','으로써','으로서','에서','으로','에게','에는','에도','까지','부터','보다','처럼','만큼','과의','와의','이라','이나','이든','이라도','에서의','라는','라고','이며','이고','이란','이다','의','을','를','이','가','은','는','과','와','도','에','로','만','나','며','란'];
+const NOUNS=new Set(['재산', '건물', '기계', '현금', '예금', '채권', '주식', '회사', '자산', '예금자', '보호', '한도', '저축은행', '농협', '수협', '산림조합', '제도', '은행', '인출', '자유예금', '저축성예금', '투자상품', '금융회사', '금액', '금융기관', '만기일', '약정', '명목', '매매', '발행', '주체', '변제', '권리', '증권', '원금', '이자액', '가격', '이자', '금리', '단기', '중기', '상환', '누적', '신용', '여건', '중앙정부', '지방정부', '금융상품', '책정', '대출', '투자자', '기업', '의사', '결정', '주주', '비율', '장치', '공개', '절차', '보유', '배당', '청산', '보통주', '분배', '순위', '상장회사', '시장', '판단', '자료', '가치', '채권자', '배분', '투자', '보험', '주목적', '예상치', '손해', '건강', '연금', '보험료', '보험금', '상품', '국가', '근로자', '생활', '은퇴', '안정', '시점', '지급', '금융', '부동산', '외환', '거래', '전문가', '기관', '정기', '증서', '위험', '물가', '주가', '공적', '노후', '가입', '미래', '사고', '목적', '수수료', '지분', '기초', '소멸', '보장', '손실', '이익', '수익', '신주', '의결권', '증가', '자본금', '부채', '소각', '정보', '공시', '투자판단']);
+function autoBlanks(parts,blanks){
+  const plain=parts.map(p=>p.t!==undefined?p.t:blanks[p.b].a[0]).join('');
+  const out=[];
+  parts.forEach((pt,pi)=>{
+    if(pt.t===undefined){ out.push(pt); return; }
+    const txt=pt.t, re=/[가-힣]+/g; let m,last=0;
+    while((m=re.exec(txt))){
+      const st=m.index, en=st+m[0].length, tok=m[0];
+      const before=txt[st-1], after=txt[en];
+      if(st===0&&pi>0&&parts[pi-1].t===undefined) continue;
+      if(en===txt.length&&pi<parts.length-1&&parts[pi+1].t===undefined) continue;
+      if((before&&/[0-9A-Za-z]/.test(before))||(after&&/[0-9A-Za-z]/.test(after))) continue;
+      let stem=null;
+      if(NOUNS.has(tok)) stem=tok;
+      else { let best=''; for(const p of PARTICLES){ if(tok.endsWith(p)&&p.length>best.length&&NOUNS.has(tok.slice(0,-p.length))) best=p; } if(best) stem=tok.slice(0,-best.length); }
+      if(!stem) continue;
+      if(plain.split(stem).length!==2) continue;
+      if(st>last) out.push({t:txt.slice(last,st)});
+      out.push({b:blanks.length}); blanks.push({a:[stem],pri:false,auto:true});
+      last=st+stem.length;
+    }
+    if(last<txt.length) out.push({t:txt.slice(last)});
+  });
+  return out;
+}
+/*AUTO-END*/
 function parseS(raw,id){
-  const parts=[],blanks=[]; let last=0,m; const re=/\{\{(!?)([^}]+)\}\}/g;
+  let parts=[],blanks=[]; let last=0,m; const re=/\{\{(!?)([^}]+)\}\}/g;
   while((m=re.exec(raw))){
     if(m.index>last) parts.push({t:raw.slice(last,m.index)});
     parts.push({b:blanks.length});
@@ -475,6 +504,7 @@ function parseS(raw,id){
   }
   if(last<raw.length) parts.push({t:raw.slice(last)});
   const di=blanks.findIndex(x=>x.pri);
+  parts=autoBlanks(parts,blanks);
   return {id,parts,blanks,def:di<0?0:di};
 }
 const S=RAW.map((r,i)=>parseS(r,i+1));
